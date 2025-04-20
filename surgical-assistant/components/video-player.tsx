@@ -13,11 +13,9 @@ export function VideoPlayer() {
 
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
-      {/* Video Thumbnail */}
       <div className="relative aspect-video bg-gray-100 flex items-center justify-center">
-        <img src="/placeholder.svg?height=360&width=640" alt="Video thumbnail" className="w-full h-full object-cover" />
+        
 
-        {/* Play/Pause Button Overlay */}
         <button
           className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 hover:bg-opacity-30 transition-opacity"
           onClick={togglePlayback}

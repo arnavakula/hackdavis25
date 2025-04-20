@@ -1,11 +1,15 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { VideoPlayer } from "@/components/video-player"
 import { FeedbackLog } from "@/components/feedback-log"
+import { useVideoContext } from "@/app/context/VideoContext"
 
 export default function InteractionPage() {
+  const { file, disease, history } = useVideoContext()
+  console.log(file, disease, history)
   return (
     <main className="flex min-h-screen flex-col bg-white">
       <div className="flex flex-col h-screen">
@@ -14,13 +18,15 @@ export default function InteractionPage() {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Left Column - Video Player */}
           <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Surgery Video</h2>
-            <VideoPlayer />
+            {file && (
+              <video controls className="w-full max-w-3xl mt-4">
+                <source src={URL.createObjectURL(file)} type={file.type} />
+              </video>
+            )}
           </div>
 
-          {/* Center Column - Feedback Log */}
           <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Live Feedback</h2>
             <FeedbackLog />
