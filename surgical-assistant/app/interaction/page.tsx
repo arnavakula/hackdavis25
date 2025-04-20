@@ -18,8 +18,11 @@ export type FeedbackEntry = {
 
 export default function InteractionPage() {
   const { file } = useVideoContext()
+  const recognitionRef = useRef<any>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [feedback, setFeedback] = useState<FeedbackEntry[]>([])
+  const [isListening, setIsListening] = useState(false)
+
 
   const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text)
@@ -33,28 +36,43 @@ export default function InteractionPage() {
   const startSpeechToText = (onResult: (text: string) => void) => {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-
+  
     if (!SpeechRecognition) return
-
+  
+    // Cleanup existing instance if needed
+    if (recognitionRef.current) {
+      recognitionRef.current.abort()
+    }
+  
     const recognition = new SpeechRecognition()
+    recognitionRef.current = recognition
+  
     recognition.lang = "en-US"
     recognition.interimResults = false
     recognition.continuous = false
-
+  
+    recognition.onstart = () => setIsListening(true)
+    recognition.onend = () => setIsListening(false)
+  
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript
       console.log("Transcript:", transcript)
       onResult(transcript)
     }
-
+  
     recognition.onerror = (err: any) => {
       console.error("Speech recognition error", err)
+      setIsListening(false)
     }
-
+  
     recognition.start()
   }
 
   const askQuestion = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+    }
+
     startSpeechToText((transcript: string) => {
       const norm = transcript.toLowerCase().trim()
       
@@ -66,6 +84,9 @@ export default function InteractionPage() {
 
       let timestamp = videoRef.current?.currentTime || 0
       let formattedTimestamp = new Date(timestamp * 1000).toISOString().substr(14, 5)
+
+      transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1)
+
 
       setFeedback((prev) => [
         ...prev,
@@ -90,7 +111,7 @@ export default function InteractionPage() {
             { type: "answer", text: data.answer, timestamp: formattedTimestamp },
           ])
 
-          askQuestion()
+          setTimeout(() => askQuestion(), 5000)
         })
         .catch((err) => console.error("Error asking question:", err))
 
@@ -98,7 +119,7 @@ export default function InteractionPage() {
   }
 
   const startQuestionLoop = () => {
-    
+    askQuestion()
   }
 
   useEffect(() => {
@@ -147,40 +168,41 @@ export default function InteractionPage() {
             speak(data.next_steps || "No next steps available")
 
             // 👇 Handle voice follow-up
-            startSpeechToText((questionText: string) => {
-              const handleFollowUp = async () => {
-                try {
-                  const qTime = videoRef.current?.currentTime || 0
-                  const qTimestamp = new Date(qTime * 1000).toISOString().substr(14, 5)
+            // startSpeechToText((questionText: string) => {
+            //   const handleFollowUp = async () => {
+            //     try {
+            //       const qTime = videoRef.current?.currentTime || 0
+            //       const qTimestamp = new Date(qTime * 1000).toISOString().substr(14, 5)
 
-                  setFeedback((prev) => [
-                    ...prev,
-                    { type: "question", text: questionText, timestamp: qTimestamp },
-                  ])
+            //       setFeedback((prev) => [
+            //         ...prev,
+            //         { type: "question", text: questionText, timestamp: qTimestamp },
+            //       ])
 
-                  const res = await fetch("http://localhost:8000/ask", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ question: questionText }),
-                  })
+            //       const res = await fetch("http://localhost:8000/ask", {
+            //         method: "POST",
+            //         headers: { "Content-Type": "application/json" },
+            //         body: JSON.stringify({ question: questionText }),
+            //       })
 
-                  const data = await res.json()
-                  speak(data.answer || "No answer available")
+            //       const data = await res.json()
+            //       speak(data.answer || "No answer available")
 
-                  const aTime = videoRef.current?.currentTime || 0
-                  const aTimestamp = new Date(aTime * 1000).toISOString().substr(14, 5)
+            //       const aTime = videoRef.current?.currentTime || 0
+            //       const aTimestamp = new Date(aTime * 1000).toISOString().substr(14, 5)
 
-                  setFeedback((prev) => [
-                    ...prev,
-                    { type: "answer", text: data.answer, timestamp: aTimestamp },
-                  ])
-                } catch (err) {
-                  console.error("Error handling follow-up question:", err)
-                }
-              }
+            //       setFeedback((prev) => [
+            //         ...prev,
+            //         { type: "answer", text: data.answer, timestamp: aTimestamp },
+            //       ])
+            //     } catch (err) {
+            //       console.error("Error handling follow-up question:", err)
+            //     }
+            //   }
 
-              handleFollowUp()
-            })
+            //   handleFollowUp()
+            // })
+            startQuestionLoop()
           })
           .catch((err) =>
             console.error("Error sending frames or retrieving next steps:", err)
@@ -220,6 +242,11 @@ export default function InteractionPage() {
 
           <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Live Feedback</h2>
+            {isListening && (
+              <div className="mb-4 px-3 py-1 inline-block text-sm bg-green-100 text-green-800 rounded-full shadow-sm animate-pulse">
+                Listening...
+              </div>
+            )}
             <FeedbackLog feedback={feedback} />
           </div>
         </div>
