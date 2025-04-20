@@ -6,13 +6,36 @@ import { Label } from "@/components/ui/label"
 import { VideoPlayer } from "@/components/video-player"
 import { FeedbackLog } from "@/components/feedback-log"
 import { useVideoContext } from "@/app/context/VideoContext"
+import { useRef } from "react"
+import { useEffect } from "react"
 
 export default function InteractionPage() {
   const { file, disease, history } = useVideoContext()
-  
+  const videoRef = useRef<HTMLVideoElement>(null)
 
+  //play for 5 seconds and then pause using ref
+  useEffect(() => {
+    if (!videoRef.current || !file) return;
+
+    const video = videoRef.current;
+
+    const cycle = async () => {
+      try {
+        await video.play();
+        setTimeout(() => {
+          video.pause()
+          console.log("timestamp: ", video.currentTime)
+          // send frames to backend
+          console.log("sending frames to backend")
+        }, 5000);
+      } catch (err) {
+        console.error("error with video cycles: ", err);
+      }
+    }
+
+    cycle()
+  }, [file])
     
-
   console.log(file, disease, history)
   return (
     <main className="flex min-h-screen flex-col bg-white">
@@ -25,7 +48,7 @@ export default function InteractionPage() {
           <div className="w-2/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Surgery Video</h2>
             {file && (
-              <video id='surgery-video' controls className="w-full max-w-3xl mt-4">
+              <video ref={videoRef} controls className="w-full max-w-3xl mt-4">
                 <source src={URL.createObjectURL(file)} type={file.type} />
               </video>
             )}
