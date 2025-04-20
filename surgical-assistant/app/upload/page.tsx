@@ -12,13 +12,11 @@ export default function UploadPage() {
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">Upload Surgery Video</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Column - Upload Area */}
           <div className="space-y-4">
             <h2 className="text-lg font-medium text-gray-800">Video Upload</h2>
             <FileUpload />
           </div>
-
-          {/* Right Column - Form */}
+          
           <div className="space-y-6">
             <h2 className="text-lg font-medium text-gray-800">Surgery Details</h2>
 
