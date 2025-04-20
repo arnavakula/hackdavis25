@@ -1,13 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Upload } from "lucide-react"
 
-export function FileUpload() {
+interface FileUploadProps {
+  file: File | null
+  setFile: (file: File | null) => void
+}
+
+export function FileUpload({ file, setFile }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -62,7 +65,13 @@ export function FileUpload() {
           </>
         )}
 
-        <input type="file" id="file-upload" className="sr-only" accept="video/*" onChange={handleFileChange} />
+        <input
+          type="file"
+          id="file-upload"
+          className="sr-only"
+          accept="video/*"
+          onChange={handleFileChange}
+        />
         <label
           htmlFor="file-upload"
           className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
