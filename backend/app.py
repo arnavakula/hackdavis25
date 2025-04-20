@@ -36,7 +36,7 @@ def receive_frames():
     # print(type(frames[0]))
     return jsonify({"message": "success", "farme count": len(frames)}), 200
 
-@app.route("/next-steps", methods=["GET"])
+@app.route("/next_steps", methods=["GET"])
 def dummy_next_steps():
     return jsonify({"next_steps": "stop the bleeding and go to the upper GI"})
 
