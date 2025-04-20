@@ -6,13 +6,29 @@
   import { VideoPlayer } from "@/components/video-player"
   import { FeedbackLog } from "@/components/feedback-log"
   import { useVideoContext } from "@/app/context/VideoContext"
-  import { useRef } from "react"
-  import { useEffect } from "react"
+  import { useRef, useEffect, useState } from "react"
   import React from "react";
 
+  export type FeedbackEntry = {
+    type: "next_steps" | "question" | "answer";
+    text: string;
+    timestamp: string;
+  };
+
   export default function InteractionPage() {
+    type FeedbackOption = {
+      type: 'next_steps' | 'question' | 'answer'
+      text: string
+      timestamp: string
+    }
+
     const { file, disease, history } = useVideoContext()
     const videoRef = useRef<HTMLVideoElement>(null)
+
+    const [feedback, setFeedback] = useState<FeedbackOption[]>([])
+    console.log(feedback)
+
+    
 
     //helper function for speaking
     const speak = (text: string) => {
@@ -73,6 +89,10 @@
             })
             .then((res) => res.json())
             .then((data) => {
+              //append feedback with next steps as such {type: 'next_steps', text: data.next_steps}
+              const timestamp = videoRef.current?.currentTime || 0;
+              const formattedTimestamp = new Date(timestamp * 1000).toISOString().substr(14, 5);
+              setFeedback((prev: FeedbackOption[]) => [...prev, { type: 'next_steps', text: data.next_steps, timestamp: formattedTimestamp }])
               speak(data.next_steps || 'no next steps available');
             })
             .catch((err) => console.error("error with sending frames to backend + next steps:", err))
@@ -108,40 +128,41 @@
               )}
             </div>
 
-            {/* <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
+            <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
               <h2 className="text-lg font-medium text-gray-800 mb-4">Live Feedback</h2>
-              <FeedbackLog />
-            </div> */}
+              <FeedbackLog feedback={feedback} />
+            </div>
 
             {/* Right Column - Doctor Input */}
-            <div className="w-1/3 p-4 flex flex-col">
-              <h2 className="text-lg font-medium text-gray-800 mb-4">Doctor Input</h2>
-
-              <div className="flex items-center justify-end mb-4 space-x-2">
-                <Label htmlFor="voice-feedback" className="text-sm text-gray-700">
-                  Voice Feedback
-                </Label>
-                <Switch id="voice-feedback" />
-              </div>
-
-              <div className="flex-1 flex flex-col">
-                <div className="flex-1 overflow-y-auto mb-4">{/* This space will show previous questions/answers */}</div>
-
-                <div className="mt-auto">
-                  <form className="flex items-end space-x-2">
-                    <div className="flex-1">
-                      <Label htmlFor="assistant-input" className="sr-only">
-                        Ask the assistant
-                      </Label>
-                      <Input id="assistant-input" placeholder="Ask the assistant..." className="w-full" />
-                    </div>
-                    <Button onClick={(e) => readNextSteps(e)}>Send</Button>
-                  </form>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
     )
   }
+
+  // <div className="w-1/3 p-4 flex flex-col">
+  //             <h2 className="text-lg font-medium text-gray-800 mb-4">Doctor Input</h2>
+
+  //             <div className="flex items-center justify-end mb-4 space-x-2">
+  //               <Label htmlFor="voice-feedback" className="text-sm text-gray-700">
+  //                 Voice Feedback
+  //               </Label>
+  //               <Switch id="voice-feedback" />
+  //             </div>
+
+  //             <div className="flex-1 flex flex-col">
+  //               <div className="flex-1 overflow-y-auto mb-4">{/* This space will show previous questions/answers */}</div>
+
+  //               <div className="mt-auto">
+  //                 <form className="flex items-end space-x-2">
+  //                   <div className="flex-1">
+  //                     <Label htmlFor="assistant-input" className="sr-only">
+  //                       Ask the assistant
+  //                     </Label>
+  //                     <Input id="assistant-input" placeholder="Ask the assistant..." className="w-full" />
+  //                   </div>
+  //                   <Button onClick={(e) => readNextSteps(e)}>Send</Button>
+  //                 </form>
+  //               </div>
+  //             </div>
+  //           </div>
