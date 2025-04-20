@@ -13,6 +13,16 @@ export default function InteractionPage() {
   const { file, disease, history } = useVideoContext()
   const videoRef = useRef<HTMLVideoElement>(null)
 
+  //helper function for speaking
+  const speak = (text: string) => {
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = "en-US"
+    utterance.pitch = 1
+    utterance.rate = 1.25
+    utterance.volume = 1
+    speechSynthesis.speak(utterance)
+  }
+
   //play for 5 seconds and then pause using ref
   useEffect(() => {
     if (!videoRef.current || !file) return
@@ -128,7 +138,7 @@ export default function InteractionPage() {
                     </Label>
                     <Input id="assistant-input" placeholder="Ask the assistant..." className="w-full" />
                   </div>
-                  <Button type="submit">Send</Button>
+                  <Button onClick={() => speak('make sure to cover up the wound')} type="submit">Send</Button>
                 </form>
               </div>
             </div>

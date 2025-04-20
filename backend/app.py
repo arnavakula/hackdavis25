@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import base64
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -36,6 +35,11 @@ def receive_frames():
     # print(f"read {len(frames)} frames")
     # print(type(frames[0]))
     return jsonify({"message": "success", "farme count": len(frames)}), 200
+
+@app.route("/next-steps", methods=["GET"])
+def dummy_next_steps():
+    return jsonify({"next_steps": "stop the bleeding and go to the upper GI"})
+
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
