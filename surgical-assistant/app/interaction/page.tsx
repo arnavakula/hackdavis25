@@ -7,6 +7,8 @@ import { FeedbackLog } from "@/components/feedback-log"
 import { useVideoContext } from "@/app/context/VideoContext"
 import { useRef, useEffect, useState } from "react"
 import React from "react"
+import { start } from "repl"
+import { format } from "path"
 
 export type FeedbackEntry = {
   type: "next_steps" | "question" | "answer"
@@ -15,7 +17,7 @@ export type FeedbackEntry = {
 }
 
 export default function InteractionPage() {
-  const { file, disease, history } = useVideoContext()
+  const { file } = useVideoContext()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [feedback, setFeedback] = useState<FeedbackEntry[]>([])
 
@@ -50,6 +52,53 @@ export default function InteractionPage() {
     }
 
     recognition.start()
+  }
+
+  const askQuestion = () => {
+    startSpeechToText((transcript: string) => {
+      const norm = transcript.toLowerCase().trim()
+      
+      //trigger video start
+      if (norm === 'start') {
+        videoRef.current?.play()
+        return
+      }
+
+      let timestamp = videoRef.current?.currentTime || 0
+      let formattedTimestamp = new Date(timestamp * 1000).toISOString().substr(14, 5)
+
+      setFeedback((prev) => [
+        ...prev,
+        { type: "question", text: transcript, timestamp: formattedTimestamp },
+      ])
+
+      //ping question
+      fetch('http://localhost:8000/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: transcript }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          speak(data.answer || "No answer available")
+
+          let timestamp = videoRef.current?.currentTime || 0
+          let formattedTimestamp = new Date(timestamp * 1000).toISOString().substr(14, 5)
+
+          setFeedback((prev) => [
+            ...prev,
+            { type: "answer", text: data.answer, timestamp: formattedTimestamp },
+          ])
+
+          askQuestion()
+        })
+        .catch((err) => console.error("Error asking question:", err))
+
+    })
+  }
+
+  const startQuestionLoop = () => {
+    
   }
 
   useEffect(() => {
