@@ -1,6 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Image from 'next/image'
+
+
 
 export default function LoginPage() {
   return (
@@ -15,10 +18,18 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 w-full max-w-md rounded-2xl bg-white/90 backdrop-blur-md border border-[#1f2937]/10 shadow-2xl p-10 space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-[#1f2937] tracking-tight">
+        <div className="text-center mx-auto">
+          {/* <h1 className="text-4xl font-extrabold text-[#1f2937] tracking-tight">
             Synopta
-          </h1>
+          </h1> */}
+          <Image
+            className="mx-auto object-contain"
+            src="/synopta.png"
+            alt="Synopta logo"
+            width={500}
+            height={100}
+            priority
+          />
           <p className="mt-3 text-base text-[#4b5563]">
             Securely log in to begin real-time surgical guidance.
           </p>
