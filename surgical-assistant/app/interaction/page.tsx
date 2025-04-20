@@ -21,13 +21,21 @@ export default function InteractionPage() {
 
     const cycle = async () => {
       try {
-        await video.play();
-        setTimeout(() => {
+        clearTimeout((video as any)._pauseTimeout)
+        const timeoutId = setTimeout(() => {
           video.pause()
-          console.log("timestamp: ", video.currentTime)
-          // send frames to backend
-          console.log("sending frames to backend")
+          console.log('timestamp: ', video.currentTime)
         }, 5000);
+        ;(video as any)._pauseTimeout = timeoutId
+
+        video.addEventListener("play", cycle)
+        video.play().catch(console.error)
+
+        //return function to remove event listener
+        return () => {
+          video.removeEventListener("play", cycle)
+          clearTimeout((video as any)._pauseTimeout) //?
+        }
       } catch (err) {
         console.error("error with video cycles: ", err);
       }
