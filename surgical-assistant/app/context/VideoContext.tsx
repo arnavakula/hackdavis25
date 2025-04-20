@@ -28,7 +28,7 @@ export const VideoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     </VideoContext.Provider>;
 };
 
-export const useVideoContext = () => {
+export const useVideoContext = (): VideoData => {
     const context = useContext(VideoContext);
     if (!context) throw new Error('error with video context');
     return context;
