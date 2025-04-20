@@ -209,7 +209,7 @@ export default function InteractionPage() {
           )
 
         ;(video as any)._pauseTimeout = timeoutId
-      }, 5000)
+      }, 8000)
 
       ;(video as any)._pauseTimeout = timeoutId
     }
@@ -224,33 +224,55 @@ export default function InteractionPage() {
   }, [file])
 
   return (
-    <main className="flex min-h-screen flex-col bg-white">
-      <div className="flex flex-col h-screen">
-        <header className="border-b border-gray-200 p-4">
-          <h1 className="text-xl font-semibold text-gray-900">AI Surgery Assistant</h1>
+    <main className="relative min-h-screen flex flex-col bg-[#f9fafb]">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://img.freepik.com/free-vector/medical-healthcare-blue-color_1017-26807.jpg?semt=ais_hybrid&w=740')",
+        }}
+      />
+      <div className="absolute inset-0 bg-black/30" />
+
+      {/* App content */}
+      <div className="relative z-10 flex flex-col h-screen">
+        <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+          <h1 className="text-xl font-semibold text-[#1f2937]">AI Surgery Assistant</h1>
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <div className="w-2/3 border-r border-gray-200 p-4 overflow-y-auto">
-            <h2 className="text-lg font-medium text-gray-800 mb-4">Surgery Video</h2>
+          {/* Left: Video */}
+          <div className="w-2/3 border-r border-gray-200 p-4 overflow-y-auto bg-white/80 backdrop-blur">
+            <h2 className="text-lg font-semibold text-[#1f2937] mb-4">Surgery Video</h2>
             {file && (
-              <video ref={videoRef} controls className="w-full max-w-3xl mt-4">
+              <video ref={videoRef} controls className="w-full max-w-3xl mt-4 shadow-md rounded-xl">
                 <source src={URL.createObjectURL(file)} type={file.type} />
               </video>
             )}
           </div>
 
-          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
-            <h2 className="text-lg font-medium text-gray-800 mb-4">Live Feedback</h2>
-            {isListening && (
-              <div className="mb-4 px-3 py-1 inline-block text-sm bg-green-100 text-green-800 rounded-full shadow-sm animate-pulse">
-                Listening...
-              </div>
-            )}
-            <FeedbackLog feedback={feedback} />
+          {/* Right: Feedback + Listening */}
+          <div className="w-1/3 p-4 flex flex-col bg-white/80 backdrop-blur">
+            <h2 className="text-lg font-semibold text-[#1f2937] mb-4">Live Feedback</h2>
+
+            {/* Listening always visible */}
+            <div className="sticky top-0 z-20 bg-white/90 py-2">
+              {isListening && (
+                <div className="mb-3 px-3 py-1 inline-block text-sm font-medium bg-green-100 text-green-800 rounded-full shadow-md animate-pulse">
+                  🎙️ Listening for follow-up…
+                </div>
+              )}
+            </div>
+
+            {/* Scrollable feedback log */}
+            <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+              <FeedbackLog feedback={feedback} />
+            </div>
           </div>
         </div>
       </div>
     </main>
+
   )
 }

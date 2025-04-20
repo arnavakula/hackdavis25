@@ -3,9 +3,8 @@ import './globals.css'
 import { VideoProvider } from './context/VideoContext'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Surgical Assistant',
+  description: 'Powered by Cerebras AI',
 }
 
 export default function RootLayout({
