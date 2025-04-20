@@ -15,16 +15,55 @@ export default function InteractionPage() {
 
   //play for 5 seconds and then pause using ref
   useEffect(() => {
-    if (!videoRef.current || !file) return;
+    if (!videoRef.current || !file) return
 
-    const video = videoRef.current;
+    const video = videoRef.current
+
+    //store frames from the prev 5s
+    const frames: string[] = []
+    const canvas = document.createElement("canvas")
+    const context = canvas.getContext("2d")
+
+    const captureFrame = () => {
+      if (!videoRef.current || !context) return
+      const video = videoRef.current
+
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+
+      //snapshot
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      const frame = canvas.toDataURL("image/jpeg")
+      frames.push(frame)
+    }
 
     const cycle = async () => {
       try {
+        frames.length = 0
         clearTimeout((video as any)._pauseTimeout)
+        
+        const captureInterval = setInterval(() => {
+          captureFrame()
+        }, 250)
+
         const timeoutId = setTimeout(() => {
+          clearInterval(captureInterval)
           video.pause()
+          console.log("# of frames: ", frames.length)
           console.log('timestamp: ', video.currentTime)
+
+          fetch("http://localhost:8000/frames", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ frames }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('result of route:', data)
+          })
+          .catch((err) => console.error('error with sending frames to backend:', err))
         }, 5000);
         ;(video as any)._pauseTimeout = timeoutId
 

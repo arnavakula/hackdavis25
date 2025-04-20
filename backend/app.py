@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS,cross_origin
+from flask_cors import CORS
+import base64
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -26,7 +27,15 @@ def start_workflow():
     stored_context["history"] = history
 
     print("Received context:", stored_context)
-    return jsonify({"message": "Context stored successfully"}), 200
+    return jsonify({"message": "success"}), 200
+
+@app.route("/frames", methods=["POST"])
+def receive_frames():
+    data = request.get_json()
+    frames = data.get("frames", [])
+    # print(f"read {len(frames)} frames")
+    # print(type(frames[0]))
+    return jsonify({"message": "success", "farme count": len(frames)}), 200
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
