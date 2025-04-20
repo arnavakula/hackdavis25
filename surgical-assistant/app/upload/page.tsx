@@ -1,11 +1,14 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
 import { FileUpload } from "@/components/file-upload"
+import { useState } from "react"
 
 export default function UploadPage() {
+  const [videoFile, setVideoFile] = useState<File | null>(null)
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-white">
       <div className="w-full max-w-6xl p-6 border border-gray-200 rounded-lg shadow-sm">
@@ -16,7 +19,7 @@ export default function UploadPage() {
             <h2 className="text-lg font-medium text-gray-800">Video Upload</h2>
             <FileUpload />
           </div>
-          
+
           <div className="space-y-6">
             <h2 className="text-lg font-medium text-gray-800">Surgery Details</h2>
 
