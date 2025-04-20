@@ -16,12 +16,28 @@ export default function UploadPage() {
   const [history, setHistory] = useState<string>('')
   const [videoFile, setVideoFile] = useState<File | null>(null)
 
-  const startWorkflow = () => {
+  const startWorkflow = async () => {
     if(!videoFile || !disease || !history) alert('set your video file, disease, and history!');
     else {
-      console.log(videoFile, disease, history)
-      setVideoData({ file: videoFile, disease, history });
+      try{
+        //send to backend
+        await fetch('http://localhost:8000/start', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ disease, history }),
+          
+        });
+
+        //send file video to context
+        console.log(videoFile, disease, history)
+        setVideoData({ file: videoFile, disease, history });
         router.push('/interaction');
+      } catch (err){
+        console.error('error with sending disease + patient history', err);
+      }
+      
     }
     
   }

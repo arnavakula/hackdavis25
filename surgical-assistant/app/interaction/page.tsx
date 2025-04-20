@@ -9,6 +9,10 @@ import { useVideoContext } from "@/app/context/VideoContext"
 
 export default function InteractionPage() {
   const { file, disease, history } = useVideoContext()
+  
+
+    
+
   console.log(file, disease, history)
   return (
     <main className="flex min-h-screen flex-col bg-white">
@@ -18,19 +22,19 @@ export default function InteractionPage() {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
+          <div className="w-2/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Surgery Video</h2>
             {file && (
-              <video controls className="w-full max-w-3xl mt-4">
+              <video id='surgery-video' controls className="w-full max-w-3xl mt-4">
                 <source src={URL.createObjectURL(file)} type={file.type} />
               </video>
             )}
           </div>
 
-          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
+          {/* <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
             <h2 className="text-lg font-medium text-gray-800 mb-4">Live Feedback</h2>
             <FeedbackLog />
-          </div>
+          </div> */}
 
           {/* Right Column - Doctor Input */}
           <div className="w-1/3 p-4 flex flex-col">
