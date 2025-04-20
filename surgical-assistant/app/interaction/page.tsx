@@ -7,6 +7,7 @@ import { FeedbackLog } from "@/components/feedback-log"
 import { useVideoContext } from "@/app/context/VideoContext"
 import { useRef, useEffect, useState } from "react"
 import React from "react"
+import Image from "next/image"
 import { start } from "repl"
 import { format } from "path"
 
@@ -238,7 +239,14 @@ export default function InteractionPage() {
       {/* App content */}
       <div className="relative z-10 flex flex-col h-screen">
         <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
-          <h1 className="text-xl font-semibold text-[#1f2937]">AI Surgery Assistant</h1>
+          <Image
+            className="object-contain"
+            src="/short-synopta.png"
+            alt="Synopta logo"
+            width={200}
+            height={100}
+            priority={true}
+          />
         </header>
 
         <div className="flex flex-1 overflow-hidden">

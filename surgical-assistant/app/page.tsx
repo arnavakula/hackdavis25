@@ -19,12 +19,10 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md rounded-2xl bg-white/90 backdrop-blur-md border border-[#1f2937]/10 shadow-2xl p-10 space-y-8">
         <div className="text-center mx-auto">
-          {/* <h1 className="text-4xl font-extrabold text-[#1f2937] tracking-tight">
-            Synopta
-          </h1> */}
+    
           <Image
             className="mx-auto object-contain"
-            src="/synopta.png"
+            src="/home-synopta.png"
             alt="Synopta logo"
             width={500}
             height={100}
