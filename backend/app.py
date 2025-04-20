@@ -38,8 +38,23 @@ def receive_frames():
     return jsonify({"message": "success", "farme count": len(frames)}), 200
 
 @app.route("/next_steps", methods=["GET"])
-def dummy_next_steps():
+def next_steps():
     return jsonify({"next_steps": "stop the bleeding and go to the upper GI"})
+
+@app.route("/ask", methods=["POST"])
+def handle_question():
+    data = request.get_json()
+    question = data.get("question", "").strip()
+    
+    print("Received question:", question)
+
+    # Dummy logic: just echo the question back in a pretend AI voice
+    response = f"I'm glad you asked: '{question}'. Based on the context, please ensure to control bleeding and proceed with caution."
+
+    return jsonify({
+        "answer": response
+    })
+
 
 
 if __name__ == "__main__":
